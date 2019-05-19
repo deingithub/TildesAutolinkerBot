@@ -8,6 +8,7 @@ bot_id = client.get_current_user.id
 bot_name = client.get_current_user.username
 
 issue_regex = /#([0-9]+)/
+mr_regex = /!([0-9]+)/
 
 client.on_message_create do |message|
   next if message.author.bot
@@ -32,6 +33,10 @@ client.on_message_create do |message|
   output = ""
   issues.each do |issue|
     output += "**Issue ##{issue[1]}:** <https://gitlab.com/tildes/tildes/issues/#{issue[1]}>\n"
+  end
+  merges = message.content.scan mr_regex
+  merges.each do |mr|
+    output += "**Merge Request !#{mr[1]}:** <https://gitlab.com/tildes/tildes/merge_requests/#{mr[1]}>\n"
   end
   if output.size == 0
     client.create_message(message.channel_id, ":exclamation: No matches.")
