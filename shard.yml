@@ -1,12 +1,12 @@
-name: TildeyII
+name: TildesAutolinkerBot
 version: 0.1.0
 
 authors:
   - deing <admin@15318.de>
 
 targets:
-  TildeyII:
-    main: src/TildeyII.cr
+  TildesAutolinkerBot:
+    main: src/TildesAutolinkerBot.cr
 
 dependencies:
   discordcr:

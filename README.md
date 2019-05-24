@@ -1,26 +1,18 @@
-# TildeyII
+# TildesAutolinkerBot
 
-TODO: Write a description here
+In Discord, replies to certain formats with links to the Tildes Gitlab repository.
 
 ## Installation
 
-TODO: Write installation instructions here
-
-## Usage
-
-TODO: Write usage instructions here
+Add a .env file containing
+```
+token = your-bot-token
+```
+After that, plain old `shards build` and run.
 
 ## Development
 
-TODO: Write development instructions here
-
-## Contributing
-
-1. Fork it (<https://github.com/your-github-user/TildeyII/fork>)
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create a new Pull Request
+Run `crystal tool format` before committing.
 
 ## Contributors
 
