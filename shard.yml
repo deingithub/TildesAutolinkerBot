@@ -1,5 +1,5 @@
 name: TildesAutolinkerBot
-version: 0.1.0
+version: 0.2.0
 
 authors:
   - deing <admin@15318.de>
@@ -10,11 +10,11 @@ targets:
 
 dependencies:
   discordcr:
-    github: meew0/discordcr
+    github: z64/discordcr
     branch: master
   dotenv:
     github: gdotdesign/cr-dotenv
 
-crystal: 0.27.2
+crystal: 0.29.0
 
 license: MIT

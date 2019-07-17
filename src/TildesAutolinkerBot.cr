@@ -1,8 +1,11 @@
 require "dotenv"
 require "discordcr"
 
+require "./issue"
+require "./mr"
+
 Dotenv.load!
-client = Discord::Client.new(token: "Bot #{ENV["token"]}")
+client = Discord::Client.new(token: "Bot #{ENV["discord_token"]}")
 
 bot_id = client.get_current_user.id
 bot_name = client.get_current_user.username
@@ -10,41 +13,47 @@ bot_name = client.get_current_user.username
 issue_regex = /#([0-9]+)/
 mr_regex = /!([0-9]+)/
 help_regex = Regex.new("<@!?#{bot_id}> help")
-utw_regex = Regex.new("<@!?#{bot_id}> utw")
+
 help_string = <<-STR
-**__TildesAutolinker__**
-Use `@#{bot_name} help` to see this message.
-`@#{bot_name} UTW` links to the Unofficial Tildes Wiki.
-To get other links (see below), mention me anywhere in your message.
-`#123` is turned into <https://gitlab.com/tildes/tildes/issues/123>.
-Hacked together by `deing#7141`. Code here: https://git.dingenskirchen.systems/deing/TildesAutolinkerBot.
+Accepted formats:
+`#1234` Link Tildes Issue.
+`!1234` Link Tildes Merge Request.
+
+Hacked together by <@344166495317655562> — [Source](https://git.dingenskirchen.systems/deing/TildesAutolinkerBot) — `@#{bot_name} help` to see this message
 STR
 
 client.on_message_create do |message|
   next if message.author.bot
   next unless message.mentions.any? { |user| user.id == bot_id }
+
   if message.content.downcase =~ help_regex
-    client.create_message(message.channel_id, help_string)
+    client.create_message(message.channel_id, "", Discord::Embed.new(description: help_string, title: "TildesAutolinker"))
     next
   end
-  if message.content.downcase =~ utw_regex
-    client.create_message(message.channel_id, "<https://unofficial-tildes-wiki.gitlab.io>")
-    next
-  end
-  issues = message.content.scan issue_regex
+
   output = ""
+
+  issues = message.content.scan issue_regex
   issues.each do |issue|
-    output += "**Issue ##{issue[1]}:** <https://gitlab.com/tildes/tildes/issues/#{issue[1]}>\n"
+    begin
+      output += get_issue(issue[1]).formatify + "\n"
+    rescue e
+      output += "##{issue[1]} `#{e}`\n"
+    end
   end
+
   merges = message.content.scan mr_regex
   merges.each do |mr|
-    output += "**Merge Request !#{mr[1]}:** <https://gitlab.com/tildes/tildes/merge_requests/#{mr[1]}>\n"
+    begin
+      output += get_mr(mr[1]).formatify + "\n"
+    rescue e
+      output += "!#{mr[1]} `#{e}`\n"
+    end
   end
-  if output.size == 0
-    client.create_message(message.channel_id, ":exclamation: No matches found.")
-  else
-    client.create_message(message.channel_id, output)
-  end
+
+  output = ":exclamation: No matches found." if output.size == 0
+
+  client.create_message(message.channel_id, "", Discord::Embed.new(description: output))
 end
 
 client.run

@@ -6,7 +6,9 @@ In Discord, replies to certain formats with links to the Tildes Gitlab repositor
 
 Add a .env file containing
 ```
-token = your-bot-token
+discord_token = your-bot-token
+gl_token = your-personal-access-token
+gl_project = your-project-id
 ```
 After that, plain old `shards build` and run.
 
