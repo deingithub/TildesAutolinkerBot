@@ -38,15 +38,19 @@ client.on_message_create do |message|
     begin
       output += get_issue(issue[1]).formatify + "\n"
     rescue e
+      pp e
       output += "##{issue[1]} `#{e}`\n"
     end
   end
 
   merges = message.content.scan mr_regex
   merges.each do |mr|
+    # Avoid reacting to pings with ! in them
+    next if mr[2].size > 5
     begin
       output += get_mr(mr[1]).formatify + "\n"
     rescue e
+      pp e
       output += "!#{mr[1]} `#{e}`\n"
     end
   end
