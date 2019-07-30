@@ -8,7 +8,11 @@ Add a .env file containing
 ```
 discord_token = your-bot-token
 gl_token = your-personal-access-token
-gl_project = your-project-id
+defaultrepo = your-project-id
+
+additionalrepo = another-project-id
+yetanotherrepo = project-id-thing
+seeabove = la-id-du-project
 ```
 After that, plain old `shards build` and run.
 

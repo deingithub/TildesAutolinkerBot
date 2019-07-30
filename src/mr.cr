@@ -20,8 +20,8 @@ struct MergeRequest
   end
 end
 
-def get_mr(issue_id)
-  resp = HTTP::Client.get("https://gitlab.com/api/v4/projects/#{ENV["gl_project"]}/merge_requests/#{issue_id}", HTTP::Headers{"PRIVATE-TOKEN" => ENV["gl_token"]})
+def get_mr(repo_id, issue_id)
+  resp = HTTP::Client.get("https://gitlab.com/api/v4/projects/#{repo_id}/merge_requests/#{issue_id}", HTTP::Headers{"PRIVATE-TOKEN" => ENV["gl_token"]})
   raise "Negative API Response: #{resp.body}" unless resp.success?
   MergeRequest.from_json(resp.body)
 end

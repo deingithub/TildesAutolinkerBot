@@ -4,20 +4,22 @@ require "discordcr"
 require "./issue"
 require "./mr"
 
-Dotenv.load!
-client = Discord::Client.new(token: "Bot #{ENV["discord_token"]}")
+DOTENV = Dotenv.load!
+client = Discord::Client.new(token: "Bot #{DOTENV["discord_token"]}")
 
 bot_id = client.get_current_user.id
 bot_name = client.get_current_user.username
 
-issue_regex = /#([0-9]+)/
-mr_regex = /!([0-9]+)/
+issue_regex = /([\w\/]*)#([0-9]+)/
+mr_regex = /([\w\/]*)!([0-9]+)/
 help_regex = Regex.new("<@!?#{bot_id}> help")
 
 help_string = <<-STR
 Accepted formats:
 `#1234` Link Tildes Issue.
 `!1234` Link Tildes Merge Request.
+Prefix with a repo name to retrieve items from it instead of the default one.
+Enabled Repositories: `#{DOTENV.keys.reject("discord_token").reject("gl_token")}`
 
 Hacked together by <@344166495317655562> — [Source](https://git.dingenskirchen.systems/deing/TildesAutolinkerBot) — `@#{bot_name} help` to see this message
 STR
@@ -36,10 +38,15 @@ client.on_message_create do |message|
   issues = message.content.scan issue_regex
   issues.each do |issue|
     begin
-      output += get_issue(issue[1]).formatify + "\n"
+      repo = if issue[1].size == 0
+               DOTENV["defaultrepo"]
+             else
+               DOTENV[issue[1]]
+             end
+      output += get_issue(repo, issue[2]).formatify + "\n"
     rescue e
       pp e
-      output += "##{issue[1]} `#{e}`\n"
+      output += "##{issue[2]} `#{e}`\n"
     end
   end
 
@@ -47,11 +54,17 @@ client.on_message_create do |message|
   merges.each do |mr|
     # Avoid reacting to pings with ! in them
     next if mr[2].size > 5
+    pp mr[0]
     begin
-      output += get_mr(mr[1]).formatify + "\n"
+      repo = if mr[1].size == 0
+               DOTENV["defaultrepo"]
+             else
+               DOTENV[mr[1]]
+             end
+      output += get_mr(repo, mr[2]).formatify + "\n"
     rescue e
       pp e
-      output += "!#{mr[1]} `#{e}`\n"
+      output += "!#{mr[2]} `#{e}`\n"
     end
   end
 
