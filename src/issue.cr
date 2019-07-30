@@ -12,9 +12,10 @@ struct Issue
   )
 
   def formatify
-    output = "[##{self.iid}](#{self.web_url}) "
+    project = self.web_url.lchop("https://gitlab.com/").chomp("/issues/#{self.iid}")
+    output = "#{project}##{self.iid} "
     output += "[@#{self.author[:username]}](#{self.author[:web_url]}): "
-    output += self.title
+    output += "[#{self.title}](#{self.web_url}) "
     output += " **[\\✔]**" if self.state == "closed"
     output
   end
