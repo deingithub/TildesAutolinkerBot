@@ -8,12 +8,17 @@ struct Issue
     web_url: String,
     iid: Int32,
     state: String,
-    author: NamedTuple(username: String, web_url: String)
+    author: NamedTuple(username: String, web_url: String),
+    confidential: Bool
   )
 
   def formatify
     project = self.web_url.lchop("https://gitlab.com/").chomp("/issues/#{self.iid}")
     output = "#{project}##{self.iid} "
+    if self.confidential
+      output += "[[Confidential Issue]](#{self.web_url})\n"
+      return output
+    end
     output += "[@#{self.author[:username]}](#{self.author[:web_url]}): "
     output += "[#{self.title}](#{self.web_url}) "
     output += " **[\\✔]**" if self.state == "closed"
